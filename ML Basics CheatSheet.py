@@ -113,11 +113,11 @@
                 label_X_train = X_train.copy()
                 label_X_valid = X_valid.copy()
 
-            # Apply label encoder to each column with categorical data
-                label_encoder = LabelEncoder()
+            # Apply label encoder to each column with categorical data (for 1D data use LabelEncoder instead of Ordinal)
+                ordinaL_encoder = OrdinalEncoder()
                 for col in object_cols:
-                    label_X_train[col] = label_encoder.fit_transform(X_train[col])
-                    label_X_valid[col] = label_encoder.transform(X_valid[col])
+                    label_X_train[col] = ordinaL_encoder.fit_transform(X_train[col])
+                    label_X_valid[col] = ordinaL_encoder.transform(X_valid[col])
 
 
             # Apply one-hot encoder to each column with categorical data
