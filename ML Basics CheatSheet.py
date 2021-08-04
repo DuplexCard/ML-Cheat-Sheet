@@ -92,9 +92,9 @@
             #replace x_train with x_train_copy below
 
         # imputation
-        my_imputer = SimpleImputer()
+        my_imputer = SimpleImputer() #https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html
         imputed_X_train = pd.DataFrame(my_imputer.fit_transform(X_train))
-        imputed_X_valid = pd.DataFrame(my_imputer.fit_transform(X_valid))
+        imputed_X_valid = pd.DataFrame(my_imputer.transform(X_valid))
             # immutation removes column names so this is putting them back
         imputed_X_train.columns = X_train.columns
         imputed_X_vaild.columns = X_valid.columns
@@ -102,6 +102,40 @@
         
         # Convert type of value in series
         .astype()
+
+        # Catagorical Values
+           
+            # Get list of categorical variables
+                s = (X_train.dtypes == 'object')
+                object_cols = list(s[s].index)
+
+            # Make copy to avoid changing original data 
+                label_X_train = X_train.copy()
+                label_X_valid = X_valid.copy()
+
+            # Apply label encoder to each column with categorical data
+                label_encoder = LabelEncoder()
+                for col in object_cols:
+                    label_X_train[col] = label_encoder.fit_transform(X_train[col])
+                    label_X_valid[col] = label_encoder.transform(X_valid[col])
+
+
+            # Apply one-hot encoder to each column with categorical data
+                OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)
+                OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[object_cols]))
+                OH_cols_valid = pd.DataFrame(OH_encoder.transform(X_valid[object_cols]))
+
+            # One-hot encoding removed index; put it back
+                OH_cols_train.index = X_train.index
+                OH_cols_valid.index = X_valid.index
+
+            # Remove categorical columns (will replace with one-hot encoding)
+                num_X_train = X_train.drop(object_cols, axis=1)
+                num_X_valid = X_valid.drop(object_cols, axis=1)
+
+            # Add one-hot encoded columns to numerical features
+                OH_X_train = pd.concat([num_X_train, OH_cols_train], axis=1)
+                OH_X_valid = pd.concat([num_X_valid, OH_cols_valid], axis=1)
 
 
 
